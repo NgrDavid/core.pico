@@ -65,7 +65,7 @@ jobs:
     environment:
       name: documentation-website
       url: ${{steps.publish.outputs.page_url}}
-    if: github.event_name != 'pull_request'
+    if: github.event_name == 'release' || github.event_name == 'workflow_dispatch'
     steps:
       # ----------------------------------------------------------------------- Publish to GitHub Pages
       - name: Publish to GitHub Pages
