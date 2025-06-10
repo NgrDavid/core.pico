@@ -3,5 +3,5 @@
 
 To build the documentation, invoke:
 ````
-doxygen
+doxygenaa
 ````
