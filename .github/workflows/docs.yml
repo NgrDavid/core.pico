@@ -2,7 +2,7 @@ name: Build and publish documentation
 on:
   push:
     # This prevents tag pushes from triggering this workflow
-    branches: ['*']
+    branches: ['**']
   pull_request:
   release:
     types: [published]
