@@ -26,7 +26,7 @@ jobs:
       - name: Install Doxygen
         working-directory: ~
         run: |
-          wget https://github.com/doxygen/doxygen/releases/download/Release_1_14_0/doxygen-1.14.0.linux.bin.tar.gz
+          wget --no-verbose https://github.com/doxygen/doxygen/releases/download/Release_1_14_0/doxygen-1.14.0.linux.bin.tar.gz
           echo "e5d6ae24d0bf3f0cdc4d8f146726b89ca323922f19441af99b1872d503665ad6 doxygen-1.14.0.linux.bin.tar.gz" | sha256sum --check --strict
           tar -xf doxygen-1.14.0.linux.bin.tar.gz
           mv doxygen-1.14.0 doxygen
