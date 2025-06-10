@@ -1,0 +1,73 @@
+name: Build and publish documentation
+on:
+  push:
+    # This prevents tag pushes from triggering this workflow
+    branches: ['*']
+  pull_request:
+  release:
+    types: [published]
+  workflow_dispatch:
+jobs:
+  # =====================================================================================================================================================================
+  # Build documentation
+  # =====================================================================================================================================================================
+  build-documentation:
+    name: Build documentation
+    runs-on: ubuntu-latest
+    steps:
+      # ----------------------------------------------------------------------- Checkout
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      # ----------------------------------------------------------------------- Set up tools
+      # The Doxygen provided by the package repo is ancient and out of date so we download it from the Doxygen GitHub instead
+      - name: Install Doxygen
+        working-directory: ~
+        run: |
+          wget https://github.com/doxygen/doxygen/releases/download/Release_1_14_0/doxygen-1.14.0.linux.bin.tar.gz
+          echo "e5d6ae24d0bf3f0cdc4d8f146726b89ca323922f19441af99b1872d503665ad6 doxygen-1.14.0.linux.bin.tar.gz" | sha256sum --check --strict
+          tar -xf doxygen-1.14.0.linux.bin.tar.gz
+          mv doxygen-1.14.0 doxygen
+          echo "$(pwd)/doxygen/bin" >> "$GITHUB_PATH"
+
+      - name: Update APT package index
+        run: sudo apt-get update
+
+      - name: Install Graphviz
+        run: sudo apt-get install graphviz -y
+
+      # ----------------------------------------------------------------------- Build documentation
+      - name: Build documentation
+        id: build-documentation
+        working-directory: docs
+        run: doxygen
+
+      # ----------------------------------------------------------------------- Collect artifacts
+      - name: Collect documentation artifact
+        uses: actions/upload-pages-artifact@v3
+        if: steps.build-documentation.outcome == 'success' && always()
+        with:
+          path: docs/doc_out/html/
+
+  # =====================================================================================================================================================================
+  # Publish documentation
+  # =====================================================================================================================================================================
+  publish-documentation:
+    name: Publish documentation
+    runs-on: ubuntu-latest
+    needs: [build-documentation]
+    permissions:
+      # Both required by actions/deploy-pages
+      pages: write
+      id-token: write
+    environment:
+      name: documentation-website
+      url: ${{steps.publish.outputs.page_url}}
+    if: github.event_name != 'pull_request'
+    steps:
+      # ----------------------------------------------------------------------- Publish to GitHub Pages
+      - name: Publish to GitHub Pages
+        id: publish
+        uses: actions/deploy-pages@v4
