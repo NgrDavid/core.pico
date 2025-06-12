@@ -52,7 +52,7 @@ jobs:
           echo "$(pwd)/doxygen-1.12.0/bin" >> "$GITHUB_PATH"
 
       - name: Install Graphviz
-        run: sudo dpkg --install ubuntu_24.04_graphviz-13.0.0-cmake.deb
+        run: sudo apt-get install ./ubuntu_24.04_graphviz-13.0.0-cmake.deb
 
       # ----------------------------------------------------------------------- Build documentation
       - name: Build documentation
